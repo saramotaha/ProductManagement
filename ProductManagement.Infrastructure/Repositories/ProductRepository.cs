@@ -69,7 +69,7 @@ namespace ProductManagement.Infrastructure.Repositories
 
             Product? product = await dbContext.Products.SingleOrDefaultAsync(p => p.Id == id);
             if (product == null)
-                return null;
+                   return null;
 
             dbContext.Products.Remove(product);
             return product;

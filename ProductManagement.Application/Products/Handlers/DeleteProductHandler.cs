@@ -20,15 +20,12 @@ namespace ProductManagement.Application.Products.Handlers
         }
         public async Task<Product> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
         {
-            int id = request.Id;
-
-            await productRepository.DeleteAsync(id);
+          var product=  await productRepository.DeleteAsync(request.Id);
 
             await productRepository.SaveAsync();
 
-            var p = await productRepository.GetByIdAsync(id);
-
-            return p;
+            return product;
+            
 
         }
     }

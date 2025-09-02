@@ -98,9 +98,11 @@ namespace ProductManagement.Api.Controllers
         {
             try
             {
-                var result = await _mediator.Send(new DeleteProductCommand { Id = id });
+                Product? result = await _mediator.Send(new DeleteProductCommand { Id = id });
                 if (result == null)
+                {
                     return NotFound(new { Message = $"Product with Id {id} not found." });
+                }
 
                 return NoContent(); // HTTP 204
             }
