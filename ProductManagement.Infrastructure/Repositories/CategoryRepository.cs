@@ -28,10 +28,10 @@ namespace ProductManagement.Infrastructure.Repositories
 
 
        
-        public async Task<Category> DeleteAsync(int id)
+        public async Task<Category?> DeleteAsync(int id)
         {
 
-          Category category= await  dbContext.Categories.SingleOrDefaultAsync(c=> c.Id == id);
+          Category? category= await  dbContext.Categories.SingleOrDefaultAsync(c=> c.Id == id);
             if (category == null)
             {
                 return null;

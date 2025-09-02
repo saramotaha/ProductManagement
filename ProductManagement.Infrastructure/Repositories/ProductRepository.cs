@@ -64,10 +64,10 @@ namespace ProductManagement.Infrastructure.Repositories
 
 
 
-        public async Task<Product> DeleteAsync(int id)
+        public async Task<Product?> DeleteAsync(int id)
         {
 
-            Product product = await dbContext.Products.SingleOrDefaultAsync(p => p.Id == id);
+            Product? product = await dbContext.Products.SingleOrDefaultAsync(p => p.Id == id);
             if (product == null)
                 return null;
 
