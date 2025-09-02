@@ -27,13 +27,7 @@ namespace ProductManagement.Infrastructure.Repositories
             return  entity;
         }
 
-        public async Task<Product> DeleteAsync(int id)
-        {
-            Product p = await dbContext.Products.SingleOrDefaultAsync(p=>p.Id == id);
-            dbContext.Products.Remove(p);
-            return p;
-        }
-
+        
         public async Task<List<Product>> GetAllAsync()
         {
           List<Product> products = await dbContext.Products.ToListAsync();
@@ -42,28 +36,51 @@ namespace ProductManagement.Infrastructure.Repositories
 
         public async Task<Product> GetByIdAsync(int id)
         {
-           Product p =  await dbContext.Products.SingleOrDefaultAsync(p=>p.Id == id);
-           return p;
+           Product product =  await dbContext.Products.SingleOrDefaultAsync(p=>p.Id == id);
+           return product;
         }
 
-        public async Task<int> SaveAsync()
+
+        public async Task<List<Product>> GetProductsByCategoryId(int id)
         {
-          int x =  await dbContext.SaveChangesAsync();
-          return x; 
+            List<Product> products = await dbContext.Products.Where(p => p.CategoryId == id).ToListAsync();
+            return products;
         }
+        
 
         public async Task<Product> UpdateAsync(Product entity)
         {
+            var existingProduct = await dbContext.Products.SingleOrDefaultAsync(p => p.Id == entity.Id);
+            if (existingProduct == null)
+                return null; 
+
             dbContext.Products.Update(entity);
             return entity;
         }
 
 
 
-        public async Task<List<Product>> GetProductsByCategoryId(int id)
+        
+
+
+
+        public async Task<Product> DeleteAsync(int id)
         {
-          List<Product> products = await  dbContext.Products.Where(p=>p.CategoryId == id).ToListAsync();   
-            return products;
+
+            Product product = await dbContext.Products.SingleOrDefaultAsync(p => p.Id == id);
+            if (product == null)
+                return null;
+
+            dbContext.Products.Remove(product);
+            return product;
         }
+
+
+        public async Task<int> SaveAsync()
+        {
+            int x = await dbContext.SaveChangesAsync();
+            return x;
+        }
+
     }
 }

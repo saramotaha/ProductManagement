@@ -27,12 +27,16 @@ namespace ProductManagement.Infrastructure.Repositories
         }
 
 
-        
+       
         public async Task<Category> DeleteAsync(int id)
         {
 
           Category category= await  dbContext.Categories.SingleOrDefaultAsync(c=> c.Id == id);
-           dbContext.Categories.Remove(category);
+            if (category == null)
+            {
+                return null;
+            }
+            dbContext.Categories.Remove(category);
            await SaveAsync();
            return category;
 

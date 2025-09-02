@@ -14,37 +14,45 @@ namespace ProductManagement.Api.Controllers
     [ApiController]
     public class CategoryController : ControllerBase
     {
-        private readonly ICategoryRepository categoryRepository;
-        private readonly IMediator mediatR;
+        private readonly IMediator _mediator;
 
-        public CategoryController(ICategoryRepository categoryRepository , IMediator mediatR)
+        public CategoryController(IMediator mediator)
         {
-            this.categoryRepository = categoryRepository;
-            this.mediatR = mediatR;
+            _mediator = mediator;
         }
 
-
-
+        // GET: api/Category
         [HttpGet]
         public async Task<IActionResult> GetAllCategories()
         {
-            //List<Category> categories= await  categoryRepository.GetAllAsync();
-          var categories=  await mediatR.Send(new GetAllCategoriesQuery());
-          return Ok(categories);
-
+            try
+            {
+                var categories = await _mediator.Send(new GetAllCategoriesQuery());
+                return Ok(categories);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = ex.Message });
+            }
         }
 
-
-
-
+        // DELETE: api/Category/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategoryById(int id)
         {
-          Category category = await mediatR.Send(new DeleteCategoryCommand() { Id = id });
+            try
+            {
+                var category = await _mediator.Send(new DeleteCategoryCommand { Id = id });
 
-           //Category category=  await categoryRepository.DeleteAsync(id);
-           return Ok(category);
+                if (category == null)
+                    return NotFound(new { Message = $"Category with Id {id} not found." });
 
+                return NoContent(); 
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = ex.Message });
+            }
         }
 
 

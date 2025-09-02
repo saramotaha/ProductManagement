@@ -1,10 +1,9 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Formatters.Xml;
-using ProductManagement.Application.Interfaces;
 using ProductManagement.Application.Products.Commands;
 using ProductManagement.Application.Products.Queries;
+using Microsoft.AspNetCore.Http;
+using ProductManagement.Application.Interfaces;
 using ProductManagement.Domain.Entities;
 using System.Threading.Tasks;
 
@@ -14,82 +13,103 @@ namespace ProductManagement.Api.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        private readonly IProductRepository productRepository;
-        private readonly IMediator mediatR;
+        private readonly IMediator _mediator;
 
-        public ProductController(IProductRepository productRepository , IMediator mediatR)
+        public ProductController(IMediator mediator)
         {
-            this.productRepository = productRepository;
-            this.mediatR = mediatR;
+            _mediator = mediator;
         }
 
-
-
+        // GET: api/Product
         [HttpGet]
         public async Task<IActionResult> GetAllProducts()
         {
-            //List<Product> products = await  productRepository.GetAllAsync();
-
-            var products = await mediatR.Send(new GetAllProductsQuery());
-
-            return Ok(products);    
+            try
+            {
+                var products = await _mediator.Send(new GetAllProductsQuery());
+                return Ok(products);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = ex.Message });
+            }
         }
 
-
-
+        // GET: api/Product/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProductById(int id)
         {
-            var product = await mediatR.Send(new GetProductByIdQuery() {Id=id });
+            try
+            {
+                var product = await _mediator.Send(new GetProductByIdQuery { Id = id });
+                if (product == null)
+                    return NotFound(new { Message = $"Product with Id {id} not found." });
 
-            return Ok(product);
+                return Ok(product);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = ex.Message });
+            }
         }
 
-
-
-
+        // POST: api/Product
         [HttpPost]
-        public async Task<IActionResult> AddProduct(CreateProductCommand command)
+        public async Task<IActionResult> AddProduct([FromBody] CreateProductCommand command)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-           var x = await  mediatR.Send(command);
-            //Product x = await productRepository.AddAsync(product);
-            return Ok(x);
+            try
+            {
+                var createdProduct = await _mediator.Send(command);
+                return CreatedAtAction(nameof(GetProductById), new { id = createdProduct.Id }, createdProduct);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = ex.Message });
+            }
         }
 
-
-
-
+        // PUT: api/Product
         [HttpPut]
-        public async Task<IActionResult> EditProduct(UpdateProductCommand product)
+        public async Task<IActionResult> EditProduct([FromBody] UpdateProductCommand command)
         {
-            var x = await mediatR.Send(product);
-            //Product product1 = await productRepository.UpdateAsync(product);
-            return Ok(x);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                var updatedProduct = await _mediator.Send(command);
+                if (updatedProduct == null)
+                    return NotFound(new { Message = $"Product with Id {command.Id} not found." });
+
+                return Ok(updatedProduct);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = ex.Message });
+            }
         }
 
-
-
-        [HttpDelete]
-        public async Task<IActionResult> DeleteProduct(DeleteProductCommand deleteProduct)
+        // DELETE: api/Product/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteProduct(int id)
         {
+            try
+            {
+                var result = await _mediator.Send(new DeleteProductCommand { Id = id });
+                if (result == null)
+                    return NotFound(new { Message = $"Product with Id {id} not found." });
 
-            //Product product1 = await productRepository.DeleteAsync(id);
-            var product1 = await mediatR.Send(deleteProduct);
-
-            return Ok(product1);
-
-
+                return NoContent(); // HTTP 204
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = ex.Message });
+            }
         }
-
-
-
-
-
-
-
-
-
-
     }
+
 }
+
