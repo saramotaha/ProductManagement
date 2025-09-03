@@ -22,34 +22,29 @@ namespace ProductManagement.Application.Products.Handlers
         }
         public async Task<Product> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
         {
-            if (request.CategoryId.HasValue)
-            {
-                var categoryExists = await categoryRepository.CategoryExists(request.CategoryId.Value);
-                if (!categoryExists)
-                    throw new Exception("Category not found");
-            }
+            var categoryExists = await categoryRepository.CategoryExists(request.CategoryRef);
+            if (!categoryExists)
+                throw new Exception("Category not found");
 
+            var existingProduct = await productRepository.GetByIdAsync(request.Id);
+            if (existingProduct == null)
+                throw new Exception("Product not found");
 
-            Product product = new Product()
+           await productRepository.UpdateAsync(new Product
             {
                 Id = request.Id,
                 Name = request.Name,
                 Description = request.Description,
                 Price = request.Price,
                 StockQuantity = request.StockQuantity,
-                CategoryId = request.CategoryId,
-                UpdatedAt = request.UpdatedAt
-            };
-
-
-            await  productRepository.UpdateAsync(product);
+                CategoryRef = request.CategoryRef,
+                UpdatedAt = request.UpdatedAt ?? DateTime.UtcNow
+            });
 
             await productRepository.SaveAsync();
-            return product;
 
-
-
-
+            return existingProduct;
         }
+
     }
 }

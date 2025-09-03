@@ -24,19 +24,18 @@ namespace ProductManagement.Application.Products.Handlers
         }
         public async Task<Product> Handle(CreateProductCommand request, CancellationToken cancellationToken)
         {
-            if (request.CategoryId.HasValue)
-            {
-                var categoryExists = await categoryRepository.CategoryExists(request.CategoryId.Value);
+            
+                var categoryExists = await categoryRepository.CategoryExists(request.CategoryRef);
                 if (!categoryExists)
                     throw new Exception("Category not found");
-            }
+            
             Product product = new Product()
             {
                 Name = request.Name,
                 Description = request.Description,
                 Price = request.Price,
                 StockQuantity = request.StockQuantity,
-                CategoryId= request.CategoryId
+                CategoryRef = request.CategoryRef
 
 
             };

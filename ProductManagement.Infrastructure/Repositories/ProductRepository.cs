@@ -43,7 +43,7 @@ namespace ProductManagement.Infrastructure.Repositories
 
         public async Task<List<Product>> GetProductsByCategoryId(int id)
         {
-            List<Product> products = await dbContext.Products.Where(p => p.CategoryId == id).ToListAsync();
+            List<Product> products = await dbContext.Products.Where(p => p.CategoryRef == id).ToListAsync();
             return products;
         }
         
@@ -52,10 +52,16 @@ namespace ProductManagement.Infrastructure.Repositories
         {
             var existingProduct = await dbContext.Products.SingleOrDefaultAsync(p => p.Id == entity.Id);
             if (existingProduct == null)
-                return null; 
+                return null;
 
-            dbContext.Products.Update(entity);
-            return entity;
+            existingProduct.Name = entity.Name;
+            existingProduct.Description = entity.Description;
+            existingProduct.Price = entity.Price;
+            existingProduct.StockQuantity = entity.StockQuantity;
+            existingProduct.CategoryRef = entity.CategoryRef;
+            existingProduct.UpdatedAt = entity.UpdatedAt;
+
+            return existingProduct;
         }
 
 

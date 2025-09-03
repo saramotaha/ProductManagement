@@ -25,7 +25,7 @@ namespace ProductManagement.Application.Categories.EventHandlers
 
             foreach (var product in products)
             {
-                product.CategoryId = null;
+                product.CategoryRef = 0;
                 await productRepository.SaveAsync();
                 
             }

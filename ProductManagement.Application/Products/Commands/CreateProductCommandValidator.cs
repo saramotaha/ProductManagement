@@ -15,7 +15,7 @@ namespace ProductManagement.Application.Products.Commands
                 .NotEmpty().WithMessage("Product name is required.")
                 .MaximumLength(100).WithMessage("Product name cannot exceed 100 characters.");
 
-            RuleFor(x => x.CategoryId).NotEmpty().WithMessage("CategoryId is required");
+            RuleFor(x => x.CategoryRef).NotEmpty().WithMessage("CategoryId is required");
         }
     }
 }
