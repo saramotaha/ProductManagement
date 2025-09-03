@@ -59,7 +59,7 @@ Copy code
 ### Steps
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/ProductManagement.git
+   git clone https://github.com/saramotaha/ProductManagement.git
 Navigate to API project:
 
 bash
