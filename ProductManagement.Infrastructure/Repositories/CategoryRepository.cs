@@ -50,6 +50,13 @@ namespace ProductManagement.Infrastructure.Repositories
         }
 
 
+        public async Task<bool> CategoryExists(int id)
+        {
+            bool exist=  await dbContext.Categories.AnyAsync(c => c.Id == id);
+            return exist;
+        }
+
+
 
 
         public Task<Category> GetByIdAsync(int id)

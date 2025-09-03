@@ -1,3 +1,5 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using ProductManagement.Application.Interfaces;
@@ -24,6 +26,14 @@ builder.Services.AddScoped<ICategoryRepository , CategoryRepository>();
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(Assembly.GetAssembly(typeof(CreateProductCommand))!)
 );
+
+builder.Services.AddValidatorsFromAssembly(typeof(CreateProductCommandValidator).Assembly);
+builder.Services.AddFluentValidationAutoValidation();
+
+
+
+
+
 
 var app = builder.Build();
 

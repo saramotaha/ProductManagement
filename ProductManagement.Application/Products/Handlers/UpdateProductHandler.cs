@@ -13,13 +13,23 @@ namespace ProductManagement.Application.Products.Handlers
     public class UpdateProductHandler : IRequestHandler<UpdateProductCommand, Product>
     {
         private readonly IProductRepository productRepository;
+        private readonly ICategoryRepository categoryRepository;
 
-        public UpdateProductHandler(IProductRepository productRepository)
+        public UpdateProductHandler(IProductRepository productRepository , ICategoryRepository categoryRepository)
         {
             this.productRepository = productRepository;
+            this.categoryRepository = categoryRepository;
         }
         public async Task<Product> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
         {
+            if (request.CategoryId.HasValue)
+            {
+                var categoryExists = await categoryRepository.CategoryExists(request.CategoryId.Value);
+                if (!categoryExists)
+                    throw new Exception("Category not found");
+            }
+
+
             Product product = new Product()
             {
                 Id = request.Id,

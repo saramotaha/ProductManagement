@@ -13,13 +13,23 @@ namespace ProductManagement.Application.Products.Handlers
     public class CreateProductHandler : IRequestHandler<CreateProductCommand, Product>
     {
         private readonly IProductRepository productRepository;
+        private readonly ICategoryRepository categoryRepository;
+        private readonly IMediator mediator;
 
-        public CreateProductHandler(IProductRepository productRepository)
+        public CreateProductHandler(IProductRepository productRepository , ICategoryRepository categoryRepository , IMediator mediator)
         {
             this.productRepository = productRepository;
+            this.categoryRepository = categoryRepository;
+            this.mediator = mediator;
         }
         public async Task<Product> Handle(CreateProductCommand request, CancellationToken cancellationToken)
         {
+            if (request.CategoryId.HasValue)
+            {
+                var categoryExists = await categoryRepository.CategoryExists(request.CategoryId.Value);
+                if (!categoryExists)
+                    throw new Exception("Category not found");
+            }
             Product product = new Product()
             {
                 Name = request.Name,
@@ -32,6 +42,9 @@ namespace ProductManagement.Application.Products.Handlers
             };
             await productRepository.AddAsync(product);
             await productRepository.SaveAsync();
+
+           
+
             return product;
 
         }

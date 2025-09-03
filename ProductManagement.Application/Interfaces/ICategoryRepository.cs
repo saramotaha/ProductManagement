@@ -9,5 +9,6 @@ namespace ProductManagement.Application.Interfaces
 {
     public interface ICategoryRepository : IGenericRepository<Category>
     {
+        Task<bool> CategoryExists(int id);
     }
 }
