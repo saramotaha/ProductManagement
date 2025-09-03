@@ -1,7 +1,8 @@
-t API
+# 🛒 Product Management API
 
 A **Product Management API** built with **.NET 8**, implementing **Clean Architecture** and **CQRS with MediatR**.  
-The project demonstrates a scalable, maintainable design with clear separation of concerns across layers.
+The project demonstrates a scalable, maintainable design with clear separation of concerns across layers.  
+👉 Using **EF Core In-Memory Database** (no SQL setup required).
 
 ---
 
@@ -13,14 +14,13 @@ The project demonstrates a scalable, maintainable design with clear separation o
 - [Usage](#-usage)
 - [API Endpoints](#-api-endpoints)
 - [Tech Stack](#-tech-stack)
-- [Contributing](#-contributing)
-- [License](#-license)
+- [Notes](#-notes)
 
 ---
 
 ## 📌 Overview
-This API provides CRUD operations for managing **Products** and **Categories**.  
-It is designed following **Domain-Driven Design (DDD)** principles and uses **Domain Events** instead of direct foreign keys.
+This API provides CRUD operations for **Products** and limited operations for **Categories**.  
+It is designed following **Clean Architecture** principles with **CQRS + MediatR** and respects **DDD aggregate boundaries** (Products and Categories communicate without direct foreign keys).
 
 ---
 
@@ -29,33 +29,32 @@ ProductManagement/
 │── ProductManagement.Api/ → API Layer (Controllers, Swagger, DI setup)
 │── ProductManagement.Application/ → Application Layer (CQRS: Commands, Queries, Handlers)
 │── ProductManagement.Domain/ → Domain Layer (Entities, Value Objects, Domain Events)
-│── ProductManagement.Infrastructure/ → Infrastructure Layer (EF Core, Database)
+│── ProductManagement.Infrastructure/→ Infrastructure Layer (EF Core In-Memory)
 
 markdown
 Copy code
 
-- **API Layer** → Exposes endpoints via Controllers.
-- **Application Layer** → Handles business logic with CQRS + MediatR.
-- **Domain Layer** → Contains entities, value objects, and domain rules.
-- **Infrastructure Layer** → Database persistence with EF Core.
+- **API Layer** → Exposes endpoints via Controllers.  
+- **Application Layer** → Handles business logic with CQRS + MediatR.  
+- **Domain Layer** → Contains entities and domain rules.  
+- **Infrastructure Layer** → Persistence with EF Core (In-Memory).  
 
 ---
 
 ## ✨ Features
-- ✅ Full CRUD for Products & Categories  
+- ✅ Full CRUD for **Products**  
+- ✅ `GetAll` + `Delete` for **Categories**  
 - ✅ CQRS implementation with MediatR  
-- ✅ Domain Events for communication  
-- ✅ EF Core for persistence  
+- ✅ Domain-Driven Design aggregate boundaries respected  
+- ✅ EF Core with In-Memory Database (no setup required)  
 - ✅ Swagger/OpenAPI for documentation  
-- ✅ Clean Architecture design  
 
 ---
 
 ## ⚙️ Installation
 
 ### Prerequisites
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)  
-- [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads)  
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 
 ### Steps
 1. Clone the repository:
@@ -66,11 +65,6 @@ Navigate to API project:
 bash
 Copy code
 cd ProductManagement/ProductManagement.Api
-Update database:
-
-bash
-Copy code
-dotnet ef database update
 Run the application:
 
 bash
@@ -78,56 +72,39 @@ Copy code
 dotnet run
 🚀 Usage
 Once running, API is available at:
-👉 https://localhost:5001/swagger
+👉 https://localhost:7274/swagger
 
 You can test all endpoints directly using Swagger UI.
 
 📖 API Endpoints
-Products
-GET /api/products → Get all products
+🔹 Products
+Method	Endpoint	Description
+GET	/api/Product	Get all products
+GET	/api/Product/{id}	Get product by ID
+POST	/api/Product	Create a new product
+PUT	/api/Product	Update an existing product
+DELETE	/api/Product/{id}	Delete a product by ID
 
-GET /api/products/{id} → Get product by ID
-
-POST /api/products → Create new product
-
-PUT /api/products/{id} → Update product
-
-DELETE /api/products/{id} → Delete product
-
-Categories
-GET /api/categories → Get all categories
-
-POST /api/categories → Create new category
-
-PUT /api/categories/{id} → Update category
-
-DELETE /api/categories/{id} → Delete category
+🔹 Categories
+Method	Endpoint	Description
+GET	/api/Category	Get all categories
+DELETE	/api/Category/{id}	Delete a category by ID
 
 🛠 Tech Stack
 .NET 8
 
-Entity Framework Core
+Entity Framework Core (In-Memory)
 
 MediatR (CQRS)
 
-SQL Server
-
 Swagger / OpenAPI
 
-🤝 Contributing
-Contributions are welcome!
+📝 Notes
+Database → Uses EF Core In-Memory (data is reset on each app restart).
 
-Fork the project
+Categories → Only supports GetAll and Delete.
 
-Create your feature branch (git checkout -b feature/YourFeature)
+Products → Full CRUD operations available.
 
-Commit changes (git commit -m 'Add new feature')
-
-Push to branch (git push origin feature/YourFeature)
-
-Open a Pull Request
-
-📄 License
-This project is licensed under the MIT License.
-You are free to use, modify, and distribute it with attribution.
+DDD → No direct foreign keys between Product and Category aggregates (uses validation + domain events).
 
